@@ -1,6 +1,6 @@
 # Volcano Interactive Map
 
-VIM is an interative map utilizing Google's satellite hybrid tile api and Folium
+VIM is an interative map utilizing Google's satellite hybrid tile and Folium
 
 List of volcanoes provided by [NOAA](https://catalog.data.gov/dataset/global-volcano-locations-database)
 
