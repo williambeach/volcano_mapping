@@ -18,6 +18,6 @@ for lat, long in zip(latitude_list, longitude_list):
 
 
 
-map.save("map.html")
+map.save("index.html")
 
 
