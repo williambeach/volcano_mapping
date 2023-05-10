@@ -1,5 +1,6 @@
 import folium
 import pandas
+from branca.element import Template, MacroElement
 
 
 volcanoes = pandas.read_csv("volcanoes.csv")
@@ -36,14 +37,22 @@ def color_by_elev(elv):
     
 
 
-map = folium.Map(location=[39.094632662122386, -96.4134528100795], zoom_start=4, 
-                 tiles="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&hl=en", attr='Google', max_zoom=100, prefer_canvas=True)
 
+map = folium.Map(location=[39.094632662122386, -96.4134528100795], zoom_start=4, tiles=None)
+
+fg_volcano = folium.FeatureGroup(name="Volcanoes")
+fg_population = folium.FeatureGroup(name="Population")
+
+fg_volcano.add_to(map)
+fg_population.add_to(map)
+
+folium.TileLayer(name='World Map', tiles="https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&hl=en", attr='Google', max_zoom=100,
+                 location=[]).add_to(map)
 
 
 
 for lat, long, elv, name, type in zip(latitudes, longitudes, elevation, names, types):
-    map.add_child(folium.Marker(location=[lat, long],
+    fg_volcano.add_child(folium.Marker(location=[lat, long],
                   popup=folium.Popup(max_width=100, min_width=100,
                   html=f'<p style="text-align: center;"><a href="https://www.google.com/search?q={name}+volcano" target="_blank"><b>{name}</b></a></p>'
                        f'<p style="text-align: center;">{"Elevation: " + str(elv) + " m"}</p>'
@@ -52,19 +61,110 @@ for lat, long, elv, name, type in zip(latitudes, longitudes, elevation, names, t
 
 
 
-map.add_child(folium.GeoJson(data=world_data, 
-                             style_function=lambda x: {'fillColor':'yellow' if x['properties']['POP2005'] < 50000 else 
-                                                       'orange' if x['properties']['POP2005'] < 100000 else 
-                                                       'red' if x['properties']['POP2005'] < 250000 else 
-                                                       'lightblue' if x['properties']['POP2005'] < 500000 else 
-                                                       'blue' if x['properties']['POP2005'] < 1000000 else 
-                                                       'darkblue' if x['properties']['POP2005'] < 5000000 else 
-                                                       'purple' if x['properties']['POP2005'] < 10000000 else 
-                                                       'pink' if x['properties']['POP2005'] < 100000000 else 
-                                                       'green' if x['properties']['POP2005'] < 500000000 else
-                                                       'beige' if x['properties']['POP2005'] < 1000000000 else
-                                                       'lightgreen'}))
+fg_population.add_child(folium.GeoJson(data=world_data, name="Population",
+                             style_function=lambda x: {'fillColor':'blue' if x['properties']['POP2005'] < 100000000 else 
+                                                       'darkgreen' if x['properties']['POP2005'] < 500000000 else
+                                                       'red'}))
 
+
+map.add_child(folium.LayerControl())
+
+
+
+template = """
+{% macro html(this, kwargs) %}
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>jQuery UI Draggable - Default functionality</title>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  
+  <script>
+  $( function() {
+    $( "#maplegend" ).draggable({
+                    start: function (event, ui) {
+                        $(this).css({
+                            right: "auto",
+                            top: "auto",
+                            bottom: "auto"
+                        });
+                    }
+                });
+});
+
+  </script>
+</head>
+<body>
+
+ 
+<div id='maplegend' class='maplegend' 
+    style='position: absolute; z-index:9999; border:2px solid grey; background-color:rgba(255, 255, 255, 0.8);
+     border-radius:6px; padding: 10px; font-size:14px; right: 20px; bottom: 20px;'>
+     
+<div class='legend-title' style='text-align:center'>Population</div>
+<div class='legend-scale'>
+  <ul class='legend-labels'>
+    <li><span style='background:blue;opacity:0.7;'></span>< 100,000,000</li>
+    <li><span style='background:green;opacity:0.7;'></span>< 500,000,000</li>
+    <li><span style='background:red;opacity:0.7;'></span>>= 500,000,000</li>
+
+  </ul>
+</div>
+</div>
+ 
+</body>
+</html>
+
+<style type='text/css'>
+  .maplegend .legend-title {
+    text-align: left;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 90%;
+    }
+  .maplegend .legend-scale ul {
+    margin: 0;
+    margin-bottom: 5px;
+    padding: 0;
+    float: left;
+    list-style: none;
+    }
+  .maplegend .legend-scale ul li {
+    font-size: 80%;
+    list-style: none;
+    margin-left: 0;
+    line-height: 18px;
+    margin-bottom: 2px;
+    }
+  .maplegend ul.legend-labels li span {
+    display: block;
+    float: left;
+    height: 16px;
+    width: 30px;
+    margin-right: 5px;
+    margin-left: 0;
+    border: 1px solid #999;
+    }
+  .maplegend .legend-source {
+    font-size: 80%;
+    color: #777;
+    clear: both;
+    }
+  .maplegend a {
+    color: #777;
+    }
+</style>
+{% endmacro %}"""
+
+macro = MacroElement()
+macro._template = Template(template)
+map.add_child(macro)
 map.save("index.html")
 
 
