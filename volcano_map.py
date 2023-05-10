@@ -105,7 +105,7 @@ template = """
  
 <div id='maplegend' class='maplegend' 
     style='position: absolute; z-index:9999; border:2px solid grey; background-color:rgba(255, 255, 255, 0.8);
-     border-radius:6px; padding: 10px; font-size:14px; right: 20px; bottom: 20px;'>
+     border-radius:6px; padding: 10px; font-size:14px; left: 20px; bottom: 20px;'>
      
 <div class='legend-title' style='text-align:center'>Population</div>
 <div class='legend-scale'>
@@ -164,7 +164,7 @@ template = """
 
 macro = MacroElement()
 macro._template = Template(template)
-map.add_child(macro)
+fg_population.add_child(macro)
 map.save("index.html")
 
 
