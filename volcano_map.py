@@ -1,12 +1,16 @@
 import folium
 import pandas
 
+
 volcanoes = pandas.read_csv("volcanoes.csv")
 latitudes = list(volcanoes["Latitude"])
 longitudes = list(volcanoes["Longitude"])
 elevation = list(volcanoes["Elevation (m)"])
 names = list(volcanoes["Volcano Name"])
 types = list(volcanoes["Type"])
+world_data = open("world.json", "r", encoding='utf-8-sig').read()
+
+
 
 def color_by_elev(elv):
     if elv < 0:
@@ -39,8 +43,8 @@ map = folium.Map(location=[39.094632662122386, -96.4134528100795], zoom_start=4,
 
 
 for lat, long, elv, name, type in zip(latitudes, longitudes, elevation, names, types):
-    map.add_child(folium.Marker(location=[lat, long], 
-                  popup=folium.Popup(max_width=100, min_width=100, 
+    map.add_child(folium.Marker(location=[lat, long],
+                  popup=folium.Popup(max_width=100, min_width=100,
                   html=f'<p style="text-align: center;"><a href="https://www.google.com/search?q={name}+volcano" target="_blank"><b>{name}</b></a></p>'
                        f'<p style="text-align: center;">{"Elevation: " + str(elv) + " m"}</p>'
                        f'<p style="text-align: center;">{"Type: " + type}</p>'), 
@@ -48,9 +52,18 @@ for lat, long, elv, name, type in zip(latitudes, longitudes, elevation, names, t
 
 
 
-
-
-
+map.add_child(folium.GeoJson(data=world_data, 
+                             style_function=lambda x: {'fillColor':'yellow' if x['properties']['POP2005'] < 50000 else 
+                                                       'orange' if x['properties']['POP2005'] < 100000 else 
+                                                       'red' if x['properties']['POP2005'] < 250000 else 
+                                                       'lightblue' if x['properties']['POP2005'] < 500000 else 
+                                                       'blue' if x['properties']['POP2005'] < 1000000 else 
+                                                       'darkblue' if x['properties']['POP2005'] < 5000000 else 
+                                                       'purple' if x['properties']['POP2005'] < 10000000 else 
+                                                       'pink' if x['properties']['POP2005'] < 100000000 else 
+                                                       'green' if x['properties']['POP2005'] < 500000000 else
+                                                       'beige' if x['properties']['POP2005'] < 1000000000 else
+                                                       'lightgreen'}))
 
 map.save("index.html")
 
