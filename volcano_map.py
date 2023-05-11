@@ -38,8 +38,10 @@ def color_by_elev(elv):
 
 
 
-map = folium.Map(location=[39.094632662122386, -96.4134528100795], zoom_start=4, tiles=None)
+map = folium.Map(location=[39.094632662122386, -96.4134528100795], zoom_start=4, tiles=None,)
 
+map.get_root().header.add_child(folium.Element("""
+<link rel="shortcut icon" href="images/favicon.png" type="image/png"/>"""))
 fg_volcano = folium.FeatureGroup(name="Volcanoes")
 fg_population = folium.FeatureGroup(name="Population")
 
@@ -69,8 +71,6 @@ fg_population.add_child(folium.GeoJson(data=world_data, name="Population",
 
 map.add_child(folium.LayerControl())
 
-map.get_root().html.add_child(folium.Element("""
-<head><link rel="shortcut icon" href="images/favicon.png" type="image/png"/></head>"""))
 
 
 template = """
