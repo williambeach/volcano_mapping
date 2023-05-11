@@ -70,7 +70,7 @@ fg_population.add_child(folium.GeoJson(data=world_data, name="Population",
 map.add_child(folium.LayerControl())
 
 map.get_root().html.add_child(folium.Element("""
-<head><link rel="icon" href="images/favicon.png" type="image/png"/></head>"""))
+<head><link rel="shortcut icon" href="images/favicon.png" type="image/png"/></head>"""))
 
 
 template = """
