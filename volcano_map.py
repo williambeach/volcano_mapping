@@ -41,7 +41,7 @@ def color_by_elev(elv):
 map = folium.Map(location=[39.094632662122386, -96.4134528100795], zoom_start=4, tiles=None,)
 
 map.get_root().header.add_child(folium.Element("""
-<link rel="shortcut icon" href="images/favicon.png" type="image/png"/>"""))
+<link rel="icon" href="favicon.png?" type="image/png"/>"""))
 fg_volcano = folium.FeatureGroup(name="Volcanoes")
 fg_population = folium.FeatureGroup(name="Population")
 
